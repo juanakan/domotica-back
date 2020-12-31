@@ -1,7 +1,8 @@
 /**
  * Data Model Interfaces
  */
-import { Light } from "./interfaces/light.interface";
+import { response } from "express";
+import { Light } from "./light.interface";
 
 /**
  * In-Memory Store
@@ -36,28 +37,48 @@ let lights: Light[] = [
  */
 
 export const findAll = async (): Promise<Light[]> => {
-    return lights.slice();
-  };
-  
-  export const find = async (id: number): Promise<Light> => {
-    const record: Light = lights[id];
-  
-    if (record) {
-      return {...record};
-    }
-  
-    throw new Error("No record found");
-  };
+  const findAll : Promise<Light[]> = new Promise((resolve, reject) => {  
+      resolve(lights.slice());
+  });
 
-  export const update = async (updatedLight: Light): Promise<void> => {
-    if (lights[updatedLight.id]) {
-        let newLigths = lights.slice();
-        newLigths[updatedLight.id] = updatedLight;
-        lights = newLigths;
-        
-      return;
-    }
+  return findAll;
+};
   
-    throw new Error("No record found to update");
-  };
+export const find = async (id: number): Promise<Light> => {
+  const find : Promise<Light> = new Promise((resolve, reject) => {  
+    const record: Light = lights.find(light => light.id === id);
+
+    if (record) {
+      resolve({...record});
+    }
+    reject ({
+      status: 404,
+      message: "No record found"
+    });    
+  });
+
+  return find;
+};
+
+export const update = async (updatedLight: Light): Promise<Light> => {
+  const update : Promise<Light> = new Promise((resolve, reject) => {   
+      find(updatedLight.id)
+        .then(response => {
+          const newLigths: Light[] = lights.slice();
+          const indexLight = lights.findIndex(light => light.id === updatedLight.id);
+
+          newLigths[indexLight] = updatedLight;
+          lights = newLigths;
+          resolve(updatedLight);
+        })
+        .catch(response => {
+          reject ({
+            status: response.status,
+            message: response.message
+          });
+        });
+    });
+
+  return update;
+};
 

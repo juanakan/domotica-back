@@ -7,6 +7,8 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import { lightsRouter } from "./lights/lights.route";
+import {notFoundHandler} from "./middleware/notFound.middleware";
+import { errorHandler } from "./middleware/error.middleware";
 
 dotenv.config();
 
@@ -28,6 +30,8 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use('/lights', lightsRouter);
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 /**
  * Server Activation
