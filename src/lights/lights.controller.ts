@@ -5,13 +5,15 @@ import { Light } from "./light.interface";
 
 
 export async function getLights (req: Request, res: Response) {
-    try {
-        const lights: Light[] = await LightsService.findAll();
-
-        res.status(200).send(lights);
-    } catch (e) {
-        res.status(404).send(e.message);
-    }
+    
+    LightsService
+        .findAll()
+        .then(lights => {
+            res.status(200).send(lights);
+        })
+        .catch(err => {
+            res.status(err.status).send(err.message);
+        })
   }
   
   // GET items/:id
@@ -19,23 +21,24 @@ export async function getLights (req: Request, res: Response) {
 export async function getLight (req: Request, res: Response){
     const id: number = parseInt(req.params.id, 10);
 
-    try {
-        const light: Light = await LightsService.find(id);
-
-        res.status(200).send(light);
-    } catch (e) {
-        res.status(404).send(e.message);
-    }
+    LightsService
+        .find(id)
+        .then(light => {
+            res.status(200).send(light);
+        })
+        .catch(err => {
+            res.status(err.status).send(err.message);
+        })
 }
   
   // PUT items/
   
 export async function updateLight (req: Request, res: Response) {
     LightsService.update(req.body.light)
-    .then(response => {
-        res.status(200).send(response)        
+    .then(light => {
+        res.status(200).send(light)        
     })
-    .catch(response =>{
-        res.status(response.status).send(response.message)
+    .catch(err =>{
+        res.status(err.status).send(err.message)
     })
 }
