@@ -1,7 +1,6 @@
 /**
  * Data Model Interfaces
  */
-import { response } from "express";
 import { Light } from "./light.interface";
 
 /**
@@ -40,13 +39,12 @@ export const findAll = async (): Promise<Light[]> => {
   const findAll : Promise<Light[]> = new Promise((resolve, reject) => {  
       resolve(lights.slice());
   });
-
   return findAll;
 };
   
 export const find = async (id: number): Promise<Light> => {
   const find : Promise<Light> = new Promise((resolve, reject) => {  
-    const record: Light = lights.find(light => light.id === id);
+    const record: Light | undefined = lights.find(light => light.id === id);
 
     if (record) {
       resolve({...record});
